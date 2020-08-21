@@ -42,15 +42,26 @@ You can then use it in your templates with a dynamic class binding:
 </template>
 ```
 
-## Parameters
+## Opt-in Usage
+
+If you only want to use CSS Modules in some of your Vue components, you can set `oneOf` to `true`
 
 ```js
-// localIdentName: '[local]_[hash:base64:8]' // default
-// mode
-mix.vueCssModules({
-  localIdentName: "[name]__[local]___[hash:base64:5]",
-  mode: "local",
-});
+mix.vueCssModules({ oneOf: true });
+```
+
+#### Custom localIdentName
+
+```js
+// DEFAULT: '[local]_[hash:base64:8]'
+mix.vueCssModules({ localIdentName: "[name]__[local]___[hash:base64:5]" });
+```
+
+#### Local mode
+
+```js
+// DEFAULT: global
+mix.vueCssModules({ mode: "local" });
 ```
 
 ## Author

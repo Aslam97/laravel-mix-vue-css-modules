@@ -17,9 +17,11 @@ class VueCssModule {
   register({
     localIdentName = "[local]_[hash:base64:8]",
     mode = "global",
+    oneOf = false,
   } = {}) {
     this.localIdentName = localIdentName;
     this.mode = mode;
+    this.oneOf = oneOf;
   }
 
   /**
@@ -39,7 +41,33 @@ class VueCssModule {
       );
 
       if (loaders != undefined) {
-        Object.assign(loaders.options, this[this.mode]());
+        if (this.oneOf) {
+          const postCssConfig = rule.loaders.find(
+            (loader) => loader.loader === "postcss-loader"
+          );
+
+          delete rule.loaders;
+          Object.assign(rule, {
+            test: /\.css$/,
+            oneOf: [
+              {
+                resourceQuery: /module/,
+                use: [
+                  "style-loader",
+                  {
+                    loader: "css-loader",
+                    options: this[this.mode](),
+                  },
+                ],
+              },
+              {
+                use: ["style-loader", postCssConfig],
+              },
+            ],
+          });
+        } else {
+          Object.assign(loaders.options, this[this.mode]());
+        }
       }
 
       return rule;
