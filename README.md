@@ -8,15 +8,9 @@ Add supprt for css module.
 npm install laravel-mix-vue-css-modules --save
 ```
 
-or
-
-```
-yarn add laravel-mix-vue-css-modules
-```
-
 ## Usage
 
-Your `webpack.mix.js` could look like this:
+First, VueCssModules must be enabled. Your `webpack.mix.js` could look like this:
 
 ```js
 const mix = require("laravel-mix");
@@ -25,20 +19,38 @@ require("laravel-mix-vue-css-modules");
 mix.vueCssModules();
 ```
 
-custom localIdentName
+Then, add the module attribute to your `<style>`
 
-```js
-// DEFAULT localIdentName: '[local]_[hash:base64:8]'
-mix.vueCssModules({
-  localIdentName: "[name]__[local]___[hash:base64:5]",
-});
+```css
+<style module>
+.red {
+  color: red;
+}
+.bold {
+  font-weight: bold;
+}
+</style>
 ```
 
-switch mode
+You can then use it in your templates with a dynamic class binding:
+
+```vue
+<template>
+  <p :class="$style.red">
+    This should be red
+  </p>
+</template>
+```
+
+## Parameters
 
 ```js
-// default global
-mix.vueCssModules({ mode: "local" });
+// localIdentName: '[local]_[hash:base64:8]'
+// mode
+mix.vueCssModules({
+  localIdentName: "[name]__[local]___[hash:base64:5]",
+  mode: "local",
+});
 ```
 
 ## Author
