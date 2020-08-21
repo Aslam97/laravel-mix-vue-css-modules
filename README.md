@@ -1,6 +1,6 @@
 # Laravel Mix Vue Css Modules
 
-Add supprt for css module.
+Add support for css module laravel mix.
 
 ## Installation
 
@@ -45,7 +45,7 @@ You can then use it in your templates with a dynamic class binding:
 ## Parameters
 
 ```js
-// localIdentName: '[local]_[hash:base64:8]'
+// localIdentName: '[local]_[hash:base64:8]' // default
 // mode
 mix.vueCssModules({
   localIdentName: "[name]__[local]___[hash:base64:5]",
