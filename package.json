@@ -1,6 +1,6 @@
 {
   "name": "laravel-mix-vue-css-modules",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Laravel Mix extension for css modules support.",
   "main": "index.js",
   "scripts": {
