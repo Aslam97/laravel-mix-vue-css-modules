@@ -5,7 +5,7 @@ Add support for css module laravel mix.
 ## Installation
 
 ```
-npm install laravel-mix-vue-css-modules
+npm i laravel-mix-vue-css-modules
 ```
 
 ## Usage
