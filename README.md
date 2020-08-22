@@ -50,6 +50,13 @@ If you only want to use CSS Modules in some of your Vue components, you can set 
 mix.vueCssModules({ oneOf: true });
 ```
 
+#### Pre-Processors
+
+```js
+// <style lang="scss" module>
+mix.vueCssModules({ sass: true });
+```
+
 #### Custom localIdentName
 
 ```js

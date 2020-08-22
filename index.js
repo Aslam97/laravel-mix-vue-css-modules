@@ -18,10 +18,12 @@ class VueCssModule {
     localIdentName = "[local]_[hash:base64:8]",
     mode = "global",
     oneOf = false,
+    sass = false,
   } = {}) {
     this.localIdentName = localIdentName;
     this.mode = mode;
     this.oneOf = oneOf;
+    this.sass = sass;
   }
 
   /**
@@ -36,11 +38,12 @@ class VueCssModule {
         return rule;
       }
 
-      const loaders = rule.loaders.find(
-        (loader) => loader.loader === "css-loader"
+      const sass = rule.loaders.find(
+        (loader) => loader.loader === "sass-loader"
       );
+      const css = rule.loaders.find((loader) => loader.loader === "css-loader");
 
-      if (loaders != undefined) {
+      if (css != undefined) {
         if (this.oneOf) {
           const postCssConfig = rule.loaders.find(
             (loader) => loader.loader === "postcss-loader"
@@ -66,8 +69,33 @@ class VueCssModule {
             ],
           });
         } else {
-          Object.assign(loaders.options, this[this.mode]());
+          Object.assign(css.options, this[this.mode]());
         }
+      }
+
+      if (
+        this.sass &&
+        sass != undefined &&
+        rule.test.toString() === /\.scss$/.toString()
+      ) {
+        const postCssLoader = rule.loaders.find(
+          (l) => l.loader === "postcss-loader"
+        );
+        const sassLoader = rule.loaders.find((l) => l.loader === "sass-loader");
+        delete rule.loaders;
+
+        Object.assign(rule, {
+          test: /\.scss$/,
+          use: [
+            "style-loader",
+            {
+              loader: "css-loader",
+              options: this[this.mode](),
+            },
+            postCssLoader,
+            sassLoader,
+          ],
+        });
       }
 
       return rule;
