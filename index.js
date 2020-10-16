@@ -1,134 +1,265 @@
 const mix = require("laravel-mix");
 
-class VueCssModule {
+class VueCssModules {
   /**
    * Register the component.
    *
-   * When your component is called, all user parameters
-   * will be passed to this method.
-   *
-   * Ex: register(src, output) {}
-   * Ex: mix.yourPlugin('src/path', 'output/path');
-   *
-   * @param  {*} ...params
-   * @return {void}
-   *
+   * @param {Object} options
+   * @param {Boolean} [options.oneOf]
+   * @param {Boolean} [options.preProcessor]
+   * @param {String} [options.localIdentNameType]
+   * @param {Object} [options.cssLoaderOptions]
    */
-  register({
-    localIdentName = "[local]_[hash:base64:8]",
-    mode = "global",
-    oneOf = false,
-    sass = false,
-  } = {}) {
-    this.localIdentName = localIdentName;
-    this.mode = mode;
-    this.oneOf = oneOf;
-    this.sass = sass;
+  register(options = {}) {
+    const config = {
+      modules: true, // {Boolean\|String\|Object}
+      sourceMap: false, // {Boolean}
+      importLoaders: 1, // {Number} // webpackDefault: 0 // laravel-mix default: 1
+      esModule: true, // {Boolean},
+      localIdentName: options.cssLoaderOptions.localIdentName
+        ? options.cssLoaderOptions.localIdentName
+        : this.defaultLocalIdentName(options.localIdentNameType), // {String}
+    };
+
+    const cssLoaderOptions = {
+      ...config,
+      ...options.cssLoaderOptions,
+    };
+
+    delete options.cssLoaderOptions;
+
+    this.options = Object.assign(
+      {
+        oneOf: false,
+        preProcessor: true,
+        exclude: [],
+        cssLoaderOptions: cssLoaderOptions,
+      },
+      options
+    );
+
+    console.log(this.options);
   }
 
   /**
    * Override the generated webpack configuration.
    *
-   * @param  {Object} webpackConfig
-   * @return {void}
+   * @param {Object} config
    */
-  webpackConfig(webpackConfig) {
-    webpackConfig.module.rules = webpackConfig.module.rules.map((rule) => {
-      if (!rule.loaders) {
-        return rule;
-      }
+  webpackConfig(config) {
+    // for css-loader
+    const cssLoaders = config.module.rules.find(
+      (rule) => rule.test.toString() === "/\\.css$/"
+    );
 
-      const sass = rule.loaders.find(
-        (loader) => loader.loader === "sass-loader"
+    if (this.options.oneOf) this.handleOneOfCss(cssLoaders);
+    else this.handleCss(cssLoaders);
+
+    // only if pre-processor activated || default is active
+    if (this.options.preProcessor) {
+      // for sass-loader
+      const sassLoaders = config.module.rules.find(
+        (rule) => rule.test.toString() === "/\\.scss$/"
       );
-      const css = rule.loaders.find((loader) => loader.loader === "css-loader");
 
-      if (css != undefined) {
-        if (this.oneOf) {
-          const postCssConfig = rule.loaders.find(
-            (loader) => loader.loader === "postcss-loader"
-          );
+      if (this.options.oneOf) this.handleOneOfPreProcessor(sassLoaders);
+      else this.handlePreProcessor(sassLoaders);
+    }
+  }
 
-          delete rule.loaders;
-          Object.assign(rule, {
-            test: /\.css$/,
-            oneOf: [
-              {
-                resourceQuery: /module/,
-                use: [
-                  "style-loader",
-                  {
-                    loader: "css-loader",
-                    options: this[this.mode](),
-                  },
-                ],
-              },
-              {
-                use: ["style-loader", postCssConfig],
-              },
-            ],
-          });
-        } else {
-          Object.assign(css.options, this[this.mode]());
-        }
-      }
+  /**
+   * handle normal css-module
+   *
+   * @param {*} cssLoaders
+   * @returns
+   * @memberof VueCssModule
+   *
+   */
+  handleCss(cssLoaders) {
+    this.handleExclude(cssLoaders);
 
-      if (
-        this.sass &&
-        sass != undefined &&
-        rule.test.toString() === /\.scss$/.toString()
-      ) {
-        const postCssLoader = rule.loaders.find(
-          (l) => l.loader === "postcss-loader"
-        );
-        const sassLoader = rule.loaders.find((l) => l.loader === "sass-loader");
-        delete rule.loaders;
-
-        Object.assign(rule, {
-          test: /\.scss$/,
-          use: [
-            "style-loader",
-            {
-              loader: "css-loader",
-              options: this[this.mode](),
-            },
-            postCssLoader,
-            sassLoader,
-          ],
+    cssLoaders.loaders.forEach((cssLoader) => {
+      if (cssLoader.loader === "css-loader") {
+        Object.assign(cssLoader, {
+          options: this.options.cssLoaderOptions,
         });
       }
-
-      return rule;
     });
 
-    return webpackConfig;
+    return cssLoaders;
   }
 
   /**
-   * Return default mode
+   * handle oneOf css-module
    *
-   * @return {object}
+   * @param {*} cssLoaders
+   * @returns
+   * @memberof VueCssModule
    */
-  global() {
-    return {
-      modules: true,
-      localIdentName: this.localIdentName,
-    };
-  }
+  handleOneOfCss(cssLoaders) {
+    this.handleExclude(cssLoaders);
 
-  /**
-   * Return local mode
-   *
-   * @return {object}
-   */
-  local() {
-    return {
-      modules: {
-        mode: this.mode,
-        localIdentName: this.localIdentName,
+    // keep default config for postcss-loader
+    const postCssLoader = cssLoaders.loaders.find(
+      (cssLoader) => cssLoader.loader === "postcss-loader"
+    );
+
+    // reset loaders change with use
+    delete cssLoaders.loaders;
+
+    cssLoaders.oneOf = [
+      {
+        resourceQuery: /module/,
+        use: [
+          "style-loader",
+          {
+            loader: "css-loader",
+            options: this.options.cssLoaderOptions,
+          },
+        ],
       },
-    };
+      {
+        use: ["style-loader", postCssLoader],
+      },
+    ];
+
+    return cssLoaders;
+  }
+
+  /**
+   * handle normal css-module for pre-processcor
+   *
+   * @param {*} sassLoaders
+   * @returns
+   * @memberof VueCssModule
+   */
+  handlePreProcessor(sassLoaders) {
+    this.handleExclude(sassLoaders);
+
+    const [postCssLoader, sassLoader] = this.getDefaultPreProcessorConfig(
+      sassLoaders
+    );
+
+    // re-create config & add custom css-loader for .scss
+    sassLoaders.loaders = [
+      "style-loader",
+      {
+        loader: "css-loader",
+        options: this.options.cssLoaderOptions,
+      },
+      postCssLoader,
+      sassLoader,
+    ];
+
+    return sassLoaders;
+  }
+
+  /**
+   * handle oneOf css-module for pre-processcor
+   *
+   * @param {*} sassLoaders
+   * @returns
+   * @memberof VueCssModule
+   */
+  handleOneOfPreProcessor(sassLoaders) {
+    this.handleExclude(sassLoaders);
+
+    const [postCssLoader, sassLoader] = this.getDefaultPreProcessorConfig(
+      sassLoaders
+    );
+
+    delete sassLoaders.loaders;
+
+    sassLoaders.oneOf = [
+      {
+        resourceQuery: /module/,
+        use: [
+          "style-loader",
+          {
+            loader: "css-loader",
+            options: this.options.cssLoaderOptions,
+          },
+        ],
+      },
+      {
+        use: ["style-loader", "css-loader", postCssLoader, sassLoader],
+      },
+    ];
+
+    return sassLoaders;
+  }
+
+  /**
+   * get default config from laravel-mix
+   *
+   * @param {*} sassLoaders
+   * @returns
+   * @memberof VueCssModule
+   */
+  getDefaultPreProcessorConfig(sassLoaders) {
+    // keep default config for postcss-loader
+    const postCssLoader = sassLoaders.loaders.find(
+      (sassLoader) => sassLoader.loader === "postcss-loader"
+    );
+
+    // keep default config for sass-loader
+    const sassLoader = sassLoaders.loaders.find(
+      (sassLoader) => sassLoader.loader === "sass-loader"
+    );
+
+    return [postCssLoader, sassLoader];
+  }
+
+  /**
+   * handle exclude
+   *
+   * @param {*} loaders
+   * @returns
+   * @memberof VueCssModule
+   */
+  handleExclude(loaders) {
+    if (this.options.exclude.length > 0) {
+      if (loaders.exclude === undefined) {
+        loaders.exclude = this.options.exclude;
+      } else {
+        this.options.exclude.forEach((e) => loaders.exclude.push(e));
+      }
+    }
+
+    return loaders;
+  }
+
+  /**
+   * get default type for localIdentName
+   *
+   * @returns
+   * @memberof VueCssModule
+   */
+  defaultLocalIdentName(type) {
+    if (type === "react") {
+      return this.reactLocalIdentName();
+    }
+
+    if (type === "discord") {
+      return this.discordLocalIdentName();
+    }
+
+    return Mix.inProduction() ? "[hash:base64]" : "[path][name]__[local]";
+  }
+
+  /**
+   * Example localIdentName like react
+   */
+  reactLocalIdentName() {
+    return "[name]___[local]___[hash:base64:5]";
+  }
+
+  /**
+   * Example localIdentName like discord
+   */
+  discordLocalIdentName() {
+    return "[local]-[hash:base64:5]";
   }
 }
 
-mix.extend("vueCssModules", new VueCssModule());
+mix.extend("vueCssModules", new VueCssModules());
