@@ -37,8 +37,6 @@ class VueCssModules {
       },
       options
     );
-
-    console.log(this.options);
   }
 
   /**
