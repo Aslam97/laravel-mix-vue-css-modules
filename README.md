@@ -70,8 +70,3 @@ mix.vueCssModules({ localIdentName: "[name]__[local]___[hash:base64:5]" });
 // DEFAULT: global
 mix.vueCssModules({ mode: "local" });
 ```
-
-## Author
-
-Aslam
-FullStack Web developer
