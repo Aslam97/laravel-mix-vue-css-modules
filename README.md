@@ -52,7 +52,7 @@ mix.vueCssModules({ oneOf: true });
 
 #### Pre-Processors
 
-CSS Modules can be used along with other pre-processors. for now only **SCSS** and by default pre-processor is enable. to disable it set `preProcessor` to `false`
+CSS Modules can be used along with other pre-processors. default pre-processor is enable. to disable it set `preProcessor` to `false`
 
 ```js
 mix.vueCssModules({ preProcessor: false });
@@ -62,8 +62,8 @@ mix.vueCssModules({ preProcessor: false });
 
 Default:
 
-- use `'[path][name]__[local]` for development
-- use `'[hash:base64]'` for production
+- `'[path][name]__[local]` for development
+- `'[hash:base64]'` for production
 
 ```js
 mix.vueCssModules({
