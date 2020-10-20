@@ -8,6 +8,12 @@ Add support for css module laravel mix.
 npm i laravel-mix-vue-css-modules
 ```
 
+## Update v1 to v2
+
+```
+npm install laravel-mix-vue-css-modules@latest
+```
+
 ## Usage
 
 First, VueCssModules must be enabled. Your `webpack.mix.js` could look like this:
