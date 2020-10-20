@@ -1,4 +1,8 @@
-# Laravel Mix Vue Css Modules
+<h1 align="center">
+    Laravel Mix Vue Css Modules
+    <br>
+    <a href="https://www.npmjs.com/package/laravel-mix-versionhash"><img src="https://img.shields.io/npm/v/laravel-mix-vue-css-modules.svg?style=for-the-badge" alt="npm" /></a> <a href="https://www.npmjs.com/package/laravel-mix-versionhash"><img src="https://img.shields.io/npm/dt/laravel-mix-vue-css-modules.svg?style=for-the-badge" alt="npm" /></a>
+</h1>
 
 Add support for css module laravel mix.
 
