@@ -16,9 +16,10 @@ class VueCssModules {
       sourceMap: false, // {Boolean}
       importLoaders: 1, // {Number} // webpackDefault: 0 // laravel-mix default: 1
       esModule: true, // {Boolean},
-      localIdentName: options.cssLoaderOptions.localIdentName
-        ? options.cssLoaderOptions.localIdentName
-        : this.defaultLocalIdentName(options.localIdentNameType), // {String}
+      localIdentName:
+        options.cssLoaderOptions && options.cssLoaderOptions.localIdentName
+          ? options.cssLoaderOptions.localIdentName
+          : this.defaultLocalIdentName(options.localIdentNameType), // {String}
     };
 
     const cssLoaderOptions = {
