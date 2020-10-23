@@ -178,6 +178,8 @@ class VueCssModules {
             loader: "css-loader",
             options: this.options.cssLoaderOptions,
           },
+          postCssLoader,
+          sassLoader,
         ],
       },
       {
