@@ -118,7 +118,7 @@ class VueCssModules {
         ],
       },
       {
-        use: ["style-loader", postCssLoader],
+        use: ["style-loader", "css-loader", postCssLoader],
       },
     ];
 
