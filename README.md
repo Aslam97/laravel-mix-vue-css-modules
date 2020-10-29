@@ -4,18 +4,12 @@
     <a href="https://www.npmjs.com/package/laravel-mix-vue-css-modules"><img src="https://img.shields.io/npm/v/laravel-mix-vue-css-modules.svg?style=for-the-badge" alt="npm" /></a> <a href="https://www.npmjs.com/package/laravel-mix-vue-css-modules"><img src="https://img.shields.io/npm/dt/laravel-mix-vue-css-modules.svg?style=for-the-badge" alt="npm" /></a>
 </h1>
 
-Add support for css module laravel mix.
+Add support for css module laravel mix. **CSS, SCSS, LESS & STYLUS**
 
 ## Installation
 
 ```
 npm i laravel-mix-vue-css-modules
-```
-
-## Update v1 to v2
-
-```
-npm install laravel-mix-vue-css-modules@latest
 ```
 
 ## Usage
@@ -46,7 +40,7 @@ You can then use it in your templates with a dynamic class binding:
 
 ```vue
 <template>
-  <p :class="$style.red">This should be red</p>
+    <p :class="$style.red">This should be red</p>
 </template>
 ```
 
@@ -60,24 +54,58 @@ If you only want to use CSS Modules in some of your Vue components, you can set 
 mix.vueCssModules({ oneOf: true });
 ```
 
-#### Pre-Processors
-
-CSS Modules can be used along with other pre-processors. default pre-processor is enable. to disable it set `preProcessor` to `false`
+#### Custom Injectname
 
 ```js
-mix.vueCssModules({ preProcessor: false });
+<style module="$cssA">
+  /* identifiers injected as $cssA */
+</style>
+
+<style module="$cssB">
+  /* identifiers injected as $cssB */
+</style>
+```
+
+## Pre-Processors
+
+By default all pre-processors are disabled.
+
+#### For Scss
+
+```js
+mix.vueCssModules({ preProcessor: { scss: true } });
+```
+
+#### For Less
+
+`npm i less less-loader --save-dev`
+
+then set `less` to `true`
+
+```js
+mix.vueCssModules({ preProcessor: { less: true } });
+```
+
+#### For Stylus
+
+`npm i stylus stylus-loader --save-dev`
+
+then set `stylus` to `true`
+
+```js
+mix.vueCssModules({ preProcessor: { stylus: true } });
 ```
 
 #### Custom localIdentName
 
 Default:
 
-- `'[path][name]__[local]` for development
-- `'[hash:base64]'` for production
+-   `[path][name]__[local]` for development
+-   `[hash:base64]` for production
 
 ```js
 mix.vueCssModules({
-  cssLoaderOptions: { localIdentName: "[path][name]__[local]" },
+    cssLoaderOptions: { localIdentName: "[path][name]__[local]" }
 });
 ```
 
@@ -103,6 +131,12 @@ Default: `1`
 mix.vueCssModules({ cssLoaderOptions: { importLoaders: 2 } });
 ```
 
+#### Exclude
+
+```js
+mix.vueCssModules({ exclude: [path.resolve(__dirname, "node-modules")] });
+```
+
 #### Exclude css
 
 you may want some of your css exluded from generated class by css module.
@@ -111,12 +145,104 @@ you may want some of your css exluded from generated class by css module.
 const getLocalIdent = require("css-loader/lib/getLocalIdent");
 
 mix.vueCssModules({
-  cssLoaderOptions: {
-    getLocalIdent: (context, localIdentName, localName, options) => {
-      return context.resourcePath.includes("x.scss")
-        ? localName
-        : getLocalIdent(context, localIdentName, localName, options);
-    },
-  },
+    cssLoaderOptions: {
+        getLocalIdent: (context, localIdentName, localName, options) => {
+            return context.resourcePath.includes("x.scss")
+                ? localName
+                : getLocalIdent(context, localIdentName, localName, options);
+        }
+    }
 });
+```
+
+## Example
+
+```vue
+<script>
+export default {};
+</script>
+
+<template>
+    <div>
+        <span class="blue">css scoped</span>
+
+        <span :class="$css.blue">css module</span>
+
+        <span class="red">scss scoped</span>
+
+        <span :class="$scss.red">scss module</span>
+
+        <span class="green">less scoped</span>
+
+        <span :class="$less.green">less module</span>
+
+        <span class="indigo">stylus scoped</span>
+
+        <span :class="$stylus.indigo">stylus module</span>
+    </div>
+</template>
+
+<style scoped>
+.blue {
+    color: blue;
+}
+</style>
+
+<style module="$css">
+.blue {
+    color: blue;
+}
+</style>
+
+<style lang="scss" scoped>
+@mixin my-color($color) {
+    color: $color;
+}
+
+.red {
+    @include my-color(red);
+}
+</style>
+
+<style lang="scss" module="$scss">
+@mixin my-color($color) {
+    color: $color;
+}
+
+.red {
+    @include my-color(red);
+}
+</style>
+
+<style lang="less" scoped>
+@color: green;
+
+.green {
+    color: @color;
+}
+</style>
+
+<style lang="less" module="$less">
+@color: green;
+
+.green {
+    color: @color;
+}
+</style>
+
+<style lang="stylus" scoped>
+my-color()
+    color: arguments
+
+.indigo
+    my-color: indigo
+</style>
+
+<style lang="stylus" module="$stylus">
+my-color()
+    color: arguments
+
+.indigo
+    my-color: indigo
+</style>
 ```
