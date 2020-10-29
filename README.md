@@ -12,6 +12,20 @@ Add support for css module laravel mix. **CSS, SCSS, LESS & STYLUS**
 npm i laravel-mix-vue-css-modules
 ```
 
+## v2 to v3
+
+Before
+
+```js
+mix.vueCssModules({ preProcessor: false });
+```
+
+After
+
+```js
+mix.vueCssModules({ preProcessor: { scss: true, less: true, stylus: true } });
+```
+
 ## Usage
 
 First, VueCssModules must be enabled. Your `webpack.mix.js` could look like this:
