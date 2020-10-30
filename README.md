@@ -12,10 +12,12 @@ Add support for css module laravel mix.
 npm i laravel-mix-vue-css-modules
 ```
 
-|Laravel Mix Vue CSS Modules|Pre-Processor|Install command|
-|---|---|---|
-|v2|SCSS|`npm install laravel-mix-vue-css-modules@2`|
-|[v3](https://github.com/Aslam97/laravel-mix-vue-css-modules/tree/v3)|SCSS, LESS, STYLUS|`npm install laravel-mix-vue-css-modules@3`|
+[Example](https://github.com/Aslam97/laravel-mix-vue-css-modules/tree/v3#example)
+
+|Laravel Mix|Laravel Mix Vue CSS Modules|Pre-Processor|Install command|
+|---|---|---|---|
+|v5|v2|SCSS|`npm install laravel-mix-vue-css-modules@2`|
+|v5|[v3](https://github.com/Aslam97/laravel-mix-vue-css-modules/tree/v3)|SCSS, LESS, STYLUS|`npm install laravel-mix-vue-css-modules@3`|
 
 ## Usage
 
