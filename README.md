@@ -12,6 +12,8 @@ Add support for css module laravel mix.
 npm i laravel-mix-vue-css-modules --save-dev
 ```
 
+## Recommended v3
+
 [Example](https://github.com/Aslam97/laravel-mix-vue-css-modules/tree/v3#example)
 
 |Laravel Mix|Laravel Mix Vue CSS Modules|Pre-Processor|Install command|
