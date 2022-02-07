@@ -1,4 +1,7 @@
 <h1 align="center">
+    Working with vue & css module is USELESS at least for me, please don't use css module it's only wasting your time!. 
+</h1>
+<h1 align="center">
     Laravel Mix Vue Css Modules
     <br>
     <a href="https://www.npmjs.com/package/laravel-mix-vue-css-modules"><img src="https://img.shields.io/npm/v/laravel-mix-vue-css-modules.svg?style=for-the-badge" alt="npm" /></a> <a href="https://www.npmjs.com/package/laravel-mix-vue-css-modules"><img src="https://img.shields.io/npm/dt/laravel-mix-vue-css-modules.svg?style=for-the-badge" alt="npm" /></a>
